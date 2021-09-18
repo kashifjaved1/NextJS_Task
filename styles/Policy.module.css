@@ -1,0 +1,17 @@
+.policyDetail {
+    padding: 0 20px 50px;
+    width: 100%;
+    text-align: justify;
+}
+
+.policyPage {
+    max-width: 1099px;
+    margin: 20px auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.mainMenuColor {
+    color: black;
+}
