@@ -3,35 +3,51 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import styles from "../styles/Policy.module.css";
 import {PolicyList} from "../components/PolicyList";
+import Router, { useRouter } from "next/router";
 
 const {SubMenu} = Menu
 
-export default function Policy(props) {
-    console.log("received props to main function are: " + props)
+function parseUrlToString(url) {
+    return url.replace(/-/g, " ");
+};
+
+export default function Policy() {
     const [policyHtml, setPolicyHtml] = useState(null)
     const [defaultKey, setDefaultKey] = useState(PolicyList.TERMS_OF_USE)
+    const location = useRouter()
+    const [afterLoad, setAfterLoad] = useState(true)
 
     useEffect(() => {
         componentSwitchByKey();
     }, []);
 
     useEffect(() => {
-        if (localStorage.getItem("policyPageFirstTimeLoadToken")) {
-            localStorage.setItem("policyPageFirstTimeLoadToken", "62b41ea74ebe726b269e16ef630ae690")
-            componentSwitchByKey(PolicyList.POSTING_POLICY);
+        const url = location.asPath.split("/").pop();
+        const string = parseUrlToString(url);
+        if (string && string == "Policy" && localStorage.getItem("policyPageFirstTimeLoadToken")) {
+	    if (afterLoad){
+		setDefaultKey(PolicyList.PRIVACY_POLICY);    
+	        componentSwitchByKey(PolicyList.PRIVACY_POLICY)
+		setAfterLoad(false)
+            } else {
+	        setDefaultKey(string);
+            	componentSwitchByKey(string)
+	    }
 
         }
         else {
+            localStorage.setItem("policyPageFirstTimeLoadToken", "62b41ea74ebe726b269e16ef630ae690")
+            setDefaultKey(PolicyList.TERMS_OF_USE);
             componentSwitchByKey(PolicyList.TERMS_OF_USE);
         }
-    });
+    }, [location]);
 
     const componentSwitchByKey = (key) => {
         if (key === PolicyList.TERMS_OF_USE) {
             console.log("key: " + key)
             axios.get("https://test-web-link.themarche.ca/api/PoliciesManagement/TermsOfUse")
                 .then((res) => {
-                    console.log("responseData: " + res.data)
+                   // console.log("responseData: " + res.data)
                     setPolicyHtml(res.data)
                 })
         } else if (key === PolicyList.PRIVACY_POLICY) {
