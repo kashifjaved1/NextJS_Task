@@ -3,35 +3,28 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import styles from "../styles/Policy.module.css";
 import {PolicyList} from "../components/PolicyList";
-import Router, { useRouter } from "next/router";
 
 const {SubMenu} = Menu
-
-function parseUrlToString(url) {
-    return url.replace(/-/g, " ");
-};
 
 export default function Policy(props) {
     console.log("received props to main function are: " + props)
     const [policyHtml, setPolicyHtml] = useState(null)
     const [defaultKey, setDefaultKey] = useState(PolicyList.TERMS_OF_USE)
-    const location = useRouter()
 
     useEffect(() => {
         componentSwitchByKey();
     }, []);
 
     useEffect(() => {
-        const url = location.asPath.split("/").pop();
-        const string = parseUrlToString(url);
-        if (string && string !== "Policy") {
-            console.log(string)
-            componentSwitchByKey(string);
+        if (localStorage.getItem("policyPageFirstTimeLoadToken")) {
+            localStorage.setItem("policyPageFirstTimeLoadToken", "62b41ea74ebe726b269e16ef630ae690")
+            componentSwitchByKey(PolicyList.POSTING_POLICY);
 
-        } else {
+        }
+        else {
             componentSwitchByKey(PolicyList.TERMS_OF_USE);
         }
-    }, [location]);
+    });
 
     const componentSwitchByKey = (key) => {
         if (key === PolicyList.TERMS_OF_USE) {
